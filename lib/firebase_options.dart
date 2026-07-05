@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -49,16 +50,16 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCqe-HugcXqCMLKZ900pT_md7EFT-q7UkM',
+  static FirebaseOptions android = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_ANDROID_API_KEY'] ?? '',
     appId: '1:797434530867:android:0d35100992d6e0e8d3a746',
     messagingSenderId: '797434530867',
     projectId: 'agrimart-11232',
     storageBucket: 'agrimart-11232.firebasestorage.app',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCPF0m79nqECZtB7Kwp0_ThiARXnfzKsGM',
+  static FirebaseOptions ios = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_IOS_API_KEY'] ?? '',
     appId: '1:797434530867:ios:0ec5ad6c34e21161d3a746',
     messagingSenderId: '797434530867',
     projectId: 'agrimart-11232',
