@@ -12,7 +12,7 @@ class AppRouter {
       case splash:
         return MaterialPageRoute(builder: (_) => const SplashPage());
 
-      // TODO: Add login, register, home routes as screens are built
+      
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

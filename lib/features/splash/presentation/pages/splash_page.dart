@@ -223,7 +223,7 @@ class _LampsPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final wirePaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.55)
+      ..color = const Color(0xFF64B5F6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.2;
 
