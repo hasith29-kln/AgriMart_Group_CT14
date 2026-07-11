@@ -29,7 +29,7 @@ class _AddProductPageState extends State<AddProductPage> {
             ),
             child: const Icon(Icons.arrow_back, color: Colors.black, size: 18),
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false),
         ),
         title: const Text(
           'Add Product',

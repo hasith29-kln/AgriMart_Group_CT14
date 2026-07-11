@@ -416,9 +416,13 @@ class _HomePageState extends State<HomePage> {
 
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _selectedIndex = index;
-        });
+        if (index == 2) {
+          Navigator.pushNamed(context, '/addProduct');
+        } else {
+          setState(() {
+            _selectedIndex = index;
+          });
+        }
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
