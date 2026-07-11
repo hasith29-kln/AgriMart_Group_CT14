@@ -1,4 +1,7 @@
+import 'package:agri_mart/features/product/presentation/pages/my_products_page.dart';
 import 'package:flutter/material.dart';
+import 'package:agri_mart/features/orders/presentation/pages/orders_page.dart';
+import 'package:agri_mart/features/profile/presentation/pages/profile_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,116 +17,136 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: _buildAppBar(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // User Greeting
-            const Text(
-              'Hello, Farmer Kumarasinghe',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Colombo District — Agricultural Zone 3',
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-            ),
-            const SizedBox(height: 20),
-
-            // Stat Cards Row
-            Row(
-              children: [
-                Expanded(child: _buildStatCard('5', 'Product')),
-                const SizedBox(width: 12),
-                Expanded(child: _buildStatCard('3', 'Request')),
-                const SizedBox(width: 12),
-                Expanded(child: _buildStatCard('2', 'Sold')),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // Add New Product Button
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/addProduct');
-                },
-                icon: const Icon(Icons.add, size: 20),
-                label: const Text(
-                  'Add New Product',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF387015),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // My Recent Products Section
-            const Text(
-              'My Recent Products',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 12),
-            _buildProductCard(
-              title: 'Organic Spinach',
-              subtitle: '50 kg · Vegetables',
-              price: 'Rs. 120/kg',
-              statusText: 'Active',
-              statusColor: const Color(0xFFE8F5E9),
-              statusTextColor: const Color(0xFF2E7D32),
-            ),
-            const SizedBox(height: 12),
-            _buildProductCard(
-              title: 'Tomatoes',
-              subtitle: '80 kg · Vegetables',
-              price: 'Rs. 95/kg',
-              statusText: 'Pending',
-              statusColor: const Color(0xFFFFF3E0),
-              statusTextColor: const Color(0xFFE65100),
-            ),
-            const SizedBox(height: 24),
-
-            // New Buyer Requests Section
-            const Text(
-              'New Buyer Requests',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 12),
-            _buildRequestCard(
-              title: 'Request for Tomatoes',
-              subtitle: 'Buyer: Sandeepa K.H · 30 kg',
-              statusText: 'New',
-              statusColor: const Color(0xFFE3F2FD),
-              statusTextColor: const Color(0xFF1565C0),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
+      appBar: _selectedIndex == 0 ? _buildAppBar() : null,
+      body: _buildBody(),
       bottomNavigationBar: _buildBottomNavigationBar(),
+    );
+  }
+
+  Widget _buildBody() {
+    switch (_selectedIndex) {
+      case 0:
+        return _buildHomeContent();
+      case 1:
+        return const MyProductsPage();
+      case 3:
+        return const OrdersPage();
+      case 4:
+        return const ProfilePage();
+      // Add other cases here for other tabs later
+      default:
+        return _buildHomeContent();
+    }
+  }
+
+  Widget _buildHomeContent() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // User Greeting
+          const Text(
+            'Hello, Farmer Kumarasinghe',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Colombo District — Agricultural Zone 3',
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          ),
+          const SizedBox(height: 20),
+
+          // Stat Cards Row
+          Row(
+            children: [
+              Expanded(child: _buildStatCard('5', 'Product')),
+              const SizedBox(width: 12),
+              Expanded(child: _buildStatCard('3', 'Request')),
+              const SizedBox(width: 12),
+              Expanded(child: _buildStatCard('2', 'Sold')),
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          // Add New Product Button
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.pushNamed(context, '/addProduct');
+              },
+              icon: const Icon(Icons.add, size: 20),
+              label: const Text(
+                'Add New Product',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF387015),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // My Recent Products Section
+          const Text(
+            'My Recent Products',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _buildProductCard(
+            title: 'Organic Spinach',
+            subtitle: '50 kg · Vegetables',
+            price: 'Rs. 120/kg',
+            statusText: 'Active',
+            statusColor: const Color(0xFFE8F5E9),
+            statusTextColor: const Color(0xFF2E7D32),
+          ),
+          const SizedBox(height: 12),
+          _buildProductCard(
+            title: 'Tomatoes',
+            subtitle: '80 kg · Vegetables',
+            price: 'Rs. 95/kg',
+            statusText: 'Pending',
+            statusColor: const Color(0xFFFFF3E0),
+            statusTextColor: const Color(0xFFE65100),
+          ),
+          const SizedBox(height: 24),
+
+          // New Buyer Requests Section
+          const Text(
+            'New Buyer Requests',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _buildRequestCard(
+            title: 'Request for Tomatoes',
+            subtitle: 'Buyer: Sandeepa K.H · 30 kg',
+            statusText: 'New',
+            statusColor: const Color(0xFFE3F2FD),
+            statusTextColor: const Color(0xFF1565C0),
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
     );
   }
 
@@ -396,13 +419,6 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           _selectedIndex = index;
         });
-        if (index == 1) {
-          Navigator.pushNamed(context, '/myProducts');
-          // Reset index so Home remains active when coming back
-          setState(() {
-            _selectedIndex = 0;
-          });
-        }
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
