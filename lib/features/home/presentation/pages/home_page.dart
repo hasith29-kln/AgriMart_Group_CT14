@@ -370,11 +370,11 @@ class _HomePageState extends State<HomePage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(0, '🏠', 'Home', isActive: true),
-              _buildNavItem(1, '📦', 'Product'),
+              _buildNavItem(0, '🏠', 'Home', isActive: _selectedIndex == 0),
+              _buildNavItem(1, '📦', 'Product', isActive: _selectedIndex == 1),
               _buildNavItem(2, '➕', 'add', isCenterIcon: true),
-              _buildNavItem(3, '📋', 'Orders'),
-              _buildNavItem(4, '👤', 'Profile'),
+              _buildNavItem(3, '📋', 'Orders', isActive: _selectedIndex == 3),
+              _buildNavItem(4, '👤', 'Profile', isActive: _selectedIndex == 4),
             ],
           ),
         ),
@@ -396,6 +396,13 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           _selectedIndex = index;
         });
+        if (index == 1) {
+          Navigator.pushNamed(context, '/myProducts');
+          // Reset index so Home remains active when coming back
+          setState(() {
+            _selectedIndex = 0;
+          });
+        }
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,

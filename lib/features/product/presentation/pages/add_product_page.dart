@@ -1,4 +1,6 @@
+
 import 'package:flutter/material.dart';
+import 'package:dotted_border/dotted_border.dart';
 
 class AddProductPage extends StatefulWidget {
   const AddProductPage({super.key});
@@ -158,74 +160,85 @@ class _AddProductPageState extends State<AddProductPage> {
   }
 
   Widget _buildImageUploadBox() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 32),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        // We use a custom painter or just a simple border here.
-        // A dashed border typically requires an external package like `dotted_border`.
-        // We'll use a regular light green border as a fallback if dotted_border isn't available.
-        border: Border.all(color: const Color(0xFF9CCC65), width: 1.5, style: BorderStyle.solid),
+    return DottedBorder(
+      options: RoundedRectDottedBorderOptions(
+        color: const Color(0xFF9CCC65),
+        strokeWidth: 1.5,
+        dashPattern: const [8, 4],
+        radius: const Radius.circular(12),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.image_outlined, color: Colors.black87, size: 32),
-          const SizedBox(height: 8),
-          const Text(
-            'Tap to upload product photo',
-            style: TextStyle(
-              color: Color(0xFF387015),
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 32),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.image_outlined, color: Colors.black87, size: 32),
+            const SizedBox(height: 8),
+            const Text(
+              'Tap to upload product photo',
+              style: TextStyle(
+                color: Color(0xFF387015),
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'JPG, PNG up to 5MB',
-            style: TextStyle(
-              color: Colors.grey.shade500,
-              fontSize: 10,
+            const SizedBox(height: 4),
+            Text(
+              'JPG, PNG up to 5MB',
+              style: TextStyle(
+                color: Colors.grey.shade500,
+                fontSize: 10,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildCurrentLocationBox() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF1F8E9),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF9CCC65), width: 1.5),
+    return DottedBorder(
+      options: RoundedRectDottedBorderOptions(
+        color: const Color(0xFF9CCC65),
+        strokeWidth: 1.5,
+        dashPattern: const [8, 4],
+        radius: const Radius.circular(12),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.location_on, color: Colors.black87, size: 24),
-          const SizedBox(height: 8),
-          const Text(
-            'Use Current Location',
-            style: TextStyle(
-              color: Color(0xFF387015),
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF1F8E9),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.location_on, color: Colors.black87, size: 24),
+            const SizedBox(height: 8),
+            const Text(
+              'Use Current Location',
+              style: TextStyle(
+                color: Color(0xFF387015),
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Tap to enable GPS',
-            style: TextStyle(
-              color: const Color(0xFF387015),
-              fontSize: 10,
+            const SizedBox(height: 4),
+            Text(
+              'Tap to enable GPS',
+              style: TextStyle(
+                color: Color(0xFF387015),
+                fontSize: 10,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
