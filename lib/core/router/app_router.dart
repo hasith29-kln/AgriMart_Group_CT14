@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../features/splash/presentation/pages/splash_page.dart';
+import '../../features/auth/presentation/pages/login_page.dart';
+import '../../features/auth/presentation/pages/register_page.dart';
 
 class AppRouter {
   static const String splash = '/';
@@ -11,6 +13,10 @@ class AppRouter {
     switch (settings.name) {
       case splash:
         return MaterialPageRoute(builder: (_) => const SplashPage());
+      case login:
+        return MaterialPageRoute(builder: (_) => const LoginPage());
+      case register:
+        return MaterialPageRoute(builder: (_) => const RegisterPage());
 
       
       default:

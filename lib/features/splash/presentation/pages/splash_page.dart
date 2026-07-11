@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/router/app_router.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
@@ -85,7 +86,9 @@ class SplashPage extends StatelessWidget {
                         width: double.infinity,
                         height: 54,
                         child: OutlinedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushNamed(context, AppRouter.login);
+                          },
                           style: OutlinedButton.styleFrom(
                             backgroundColor: const Color(
                               0xFF5A8441,
@@ -116,7 +119,9 @@ class SplashPage extends StatelessWidget {
                         width: double.infinity,
                         height: 54,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushNamed(context, AppRouter.register);
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: const Color(0xFF2E5E16),
