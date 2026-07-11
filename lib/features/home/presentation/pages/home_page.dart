@@ -32,10 +32,7 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 4),
             Text(
               'Colombo District — Agricultural Zone 3',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 20),
 
@@ -134,8 +131,8 @@ class _HomePageState extends State<HomePage> {
       elevation: 0,
       title: Row(
         children: [
-          // Using an icon as a placeholder for the agrimart logo in the appbar
-          const Icon(Icons.grass, color: Color(0xFF9CCC65), size: 24),
+          // Using an emoji as the agrimart logo in the appbar
+          const Text('🌾', style: TextStyle(fontSize: 24)),
           const SizedBox(width: 8),
           const Text(
             'AgriMart',
@@ -158,20 +155,20 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.white,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.notifications_none, color: Color(0xFFD69C2F), size: 20),
+              child: const Text('🔔', style: TextStyle(fontSize: 20)),
             ),
             Positioned(
-              right: 12,
-              top: 12,
+              right: 8,
+              top: 3,
               child: Container(
-                width: 8,
-                height: 8,
+                width: 12,
+                height: 12,
                 decoration: const BoxDecoration(
                   color: Colors.red,
                   shape: BoxShape.circle,
                 ),
               ),
-            )
+            ),
           ],
         ),
         Container(
@@ -181,7 +178,7 @@ class _HomePageState extends State<HomePage> {
             color: Colors.white,
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.person_outline, color: Color(0xFF1565C0), size: 20),
+          child: const Text('👤', style: TextStyle(fontSize: 20)),
         ),
       ],
     );
@@ -261,10 +258,7 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade500,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -330,10 +324,7 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade500,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                 ),
               ],
             ),
@@ -388,9 +379,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildNavItem(int index, String emoji, String label, {bool isActive = false, bool isCenterIcon = false}) {
+  Widget _buildNavItem(
+    int index,
+    String emoji,
+    String label, {
+    bool isActive = false,
+    bool isCenterIcon = false,
+  }) {
     final color = isActive ? const Color(0xFF387015) : Colors.grey.shade500;
-    
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -400,12 +397,7 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            emoji,
-            style: TextStyle(
-              fontSize: isCenterIcon ? 28 : 24,
-            ),
-          ),
+          Text(emoji, style: TextStyle(fontSize: isCenterIcon ? 28 : 24)),
           const SizedBox(height: 4),
           Text(
             label,
