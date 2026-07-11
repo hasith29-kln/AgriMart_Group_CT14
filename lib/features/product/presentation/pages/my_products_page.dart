@@ -328,7 +328,6 @@ class _MyProductsPageState extends State<MyProductsPage> {
         borderRadius: BorderRadius.circular(12),
         elevation: 0,
         child: Container(
-          width: 25,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
@@ -343,104 +342,104 @@ class _MyProductsPageState extends State<MyProductsPage> {
               ),
             ],
           ),
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Thumbnail
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFDCEDC8),
-                  borderRadius: BorderRadius.circular(8),
-                ),
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Thumbnail
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: const Color(0xFFDCEDC8),
+                borderRadius: BorderRadius.circular(8),
               ),
-              const SizedBox(width: 12),
-              // Details
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      product.name,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: isSold ? Colors.grey.shade400 : Colors.black87,
-                      ),
+            ),
+            const SizedBox(width: 12),
+            // Details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    product.name,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: isSold ? Colors.grey.shade400 : Colors.black87,
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      product.details,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey.shade500,
-                      ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    product.details,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey.shade500,
                     ),
-                    const SizedBox(height: 6),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (product.note != null)
-                                _buildNoteBanner(
-                                  product.note!,
-                                  product.noteType!,
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (product.note != null)
+                              _buildNoteBanner(
+                                product.note!,
+                                product.noteType!,
+                              ),
+                            if (product.price.isNotEmpty)
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: product.note != null ? 4.0 : 0.0,
                                 ),
-                              if (product.price.isNotEmpty)
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                    top: product.note != null ? 4.0 : 0.0,
-                                  ),
-                                  child: Text(
-                                    product.price,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: isSold
-                                          ? Colors.grey.shade400
-                                          : Colors.black87,
-                                    ),
+                                child: Text(
+                                  product.price,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: isSold
+                                        ? Colors.grey.shade400
+                                        : Colors.black87,
                                   ),
                                 ),
-                            ],
-                          ),
+                              ),
+                          ],
                         ),
-                        if (product.note != null || product.price.isNotEmpty)
-                          const SizedBox(width: 8),
-                        _buildStatusBadge(product.status),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    // Action buttons
-                    Row(
-                      children: [
-                        _buildActionButton(
-                          label: '✏️ Edit',
-                          onTap: isSold ? null : () => _onEdit(product),
-                          isEdit: true,
-                          disabled: isSold,
-                        ),
+                      ),
+                      if (product.note != null || product.price.isNotEmpty)
                         const SizedBox(width: 8),
-                        _buildActionButton(
-                          label: '🗑️ Delete',
-                          onTap: isSold ? null : () => _onDelete(product),
-                          isEdit: false,
-                          disabled: isSold,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                      _buildStatusBadge(product.status),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  // Action buttons
+                  Row(
+                    children: [
+                      _buildActionButton(
+                        label: '✏️ Edit',
+                        onTap: isSold ? null : () => _onEdit(product),
+                        isEdit: true,
+                        disabled: isSold,
+                      ),
+                      const SizedBox(width: 8),
+                      _buildActionButton(
+                        label: '🗑️ Delete',
+                        onTap: isSold ? null : () => _onDelete(product),
+                        isEdit: false,
+                        disabled: isSold,
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ),
+                ),
+      )
     );
   }
 
