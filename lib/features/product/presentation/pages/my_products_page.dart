@@ -148,11 +148,7 @@ class _MyProductsPageState extends State<MyProductsPage> {
             child: IconButton(
               padding: EdgeInsets.zero,
               icon: const Icon(Icons.arrow_back, color: Colors.black, size: 20),
-              onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/home',
-                (route) => false,
-              ),
+              onPressed: () {},
             ),
           ),
         ),
