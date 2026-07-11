@@ -238,6 +238,8 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _selectedRoleIndex = index;
         });
+        // Navigate to home page after short delay or immediately
+        Navigator.pushReplacementNamed(context, AppRouter.home);
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),

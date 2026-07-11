@@ -103,7 +103,9 @@ class _RegisterPageState extends State<RegisterPage> {
               SizedBox(
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, AppRouter.home);
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF387015), // Dark green matching screenshot
                     foregroundColor: Colors.white,
