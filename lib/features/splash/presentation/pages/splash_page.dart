@@ -168,7 +168,7 @@ class _BackgroundPainter extends CustomPainter {
       ..moveTo(size.width * 0.20, 0)
       ..lineTo(size.width, 0)
       ..lineTo(size.width, size.height * 0.04) // Reduced height
-      ..lineTo(size.width * 0.40, size.height * 0.16) // Reduced height
+      ..lineTo(size.width * 0.10, size.height * 0.16) // Reduced height
       ..close();
     canvas.drawPath(topRight, darkGreen);
 
@@ -192,18 +192,18 @@ class _BackgroundPainter extends CustomPainter {
     final bottomLeft = Path()
       ..moveTo(0, size.height)
       ..lineTo(size.width, size.height)
-      ..lineTo(size.width, size.height * 0.72)
-      ..lineTo(0, size.height * 0.82)
+      ..lineTo(size.width, size.height * 0.82)
+      ..lineTo(0, size.height * 0.95)
       ..close();
     canvas.drawPath(bottomLeft, darkGreen);
 
     // ── Bottom-right light shape  ──
     final bottomRight = Path()
       ..moveTo(size.width, size.height)
-      ..lineTo(size.width * 0.40, size.height)
+      ..lineTo(size.width * 0.50, size.height)
       ..lineTo(size.width * 0.38, size.height * 0.84)
       ..quadraticBezierTo(
-        size.width * 0.36,
+        size.width * 0.37,
         size.height * 0.79,
         size.width * 0.48,
         size.height * 0.76,
@@ -223,9 +223,9 @@ class _LampsPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final wirePaint = Paint()
-      ..color = Colors.lightBlueAccent.withValues(alpha: 0.7)
+      ..color = Colors.white.withValues(alpha: 0.55)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
+      ..strokeWidth = 1.2;
 
     final lampBody = Paint()
       ..color = const Color(0xFFD8DCC8)

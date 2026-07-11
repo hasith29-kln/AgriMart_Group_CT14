@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   // ── Brand Colors ──────────────────────────────────────────────────────────
-  static const Color primaryGreen    = Color(0xFF2E5E16);
-  static const Color primaryLight    = Color(0xFF3D7225);
+  static const Color primaryGreen    = Color.fromARGB(255, 92, 185, 45);
+  static const Color primaryLight    = Color.fromARGB(255, 81, 150, 49);
   static const Color accentGold      = Color(0xFFE5B55A);
   static const Color backgroundLight = Color(0xFFDCE9C8);
   static const Color backgroundDark  = Color(0xFF244D0F);
