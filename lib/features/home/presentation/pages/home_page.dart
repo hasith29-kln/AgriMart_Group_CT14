@@ -53,7 +53,9 @@ class _HomePageState extends State<HomePage> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, '/addProduct');
+                },
                 icon: const Icon(Icons.add, size: 20),
                 label: const Text(
                   'Add New Product',
@@ -127,6 +129,7 @@ class _HomePageState extends State<HomePage> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
+      automaticallyImplyLeading: false,
       backgroundColor: const Color(0xFF387015),
       elevation: 0,
       title: Row(
