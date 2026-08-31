@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/providers/user_provider.dart';
 import '../../../../../core/models/user_model.dart';
+import '../../../../../core/providers/review_provider.dart';
+import '../../../../../core/providers/certificate_provider.dart';
 import 'officer_register_farmer_page.dart';
+import 'officer_farmer_details_page.dart';
 
 class OfficerFarmersPage extends ConsumerStatefulWidget {
   const OfficerFarmersPage({super.key});
@@ -128,7 +131,7 @@ class _OfficerFarmersPageState extends ConsumerState<OfficerFarmersPage> {
                         child: _buildApprovedFarmerCard(f),
                       );
                     }
-                  }).toList(),
+                  }),
                 const SizedBox(height: 20),
               ],
             ),
@@ -456,62 +459,120 @@ class _OfficerFarmersPageState extends ConsumerState<OfficerFarmersPage> {
   }
 
   Widget _buildApprovedFarmerCard(UserModel farmer) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: const BoxDecoration(
-              color: Color(0xFFC5E1A5),
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: const Text('🧑‍🌾', style: TextStyle(fontSize: 24)),
+    final ratingSummary = ref.watch(farmerRatingSummaryProvider(farmer.id));
+    final certsAsync = ref.watch(farmerCertificatesProvider(farmer.id));
+    final certs = certsAsync.value?.where((c) => c.status == 'active').toList() ?? [];
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OfficerFarmerDetailsPage(farmer: farmer),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: const BoxDecoration(
+                color: Color(0xFFC5E1A5),
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: const Text('🧑‍🌾', style: TextStyle(fontSize: 24)),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        farmer.name,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      if (certs.isNotEmpty) ...[
+                        const SizedBox(width: 6),
+                        const Text('🏆', style: TextStyle(fontSize: 12)),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Text(
+                        farmer.district ?? 'Unknown District',
+                        style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.star_rounded, size: 14, color: Color(0xFFFFB300)),
+                      const SizedBox(width: 2),
+                      Text(
+                        '${ratingSummary.averageRating.toStringAsFixed(1)} (${ratingSummary.totalReviews})',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                  farmer.name,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F5E9),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Text(
+                    'Approved',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2E7D32),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  '${farmer.district ?? 'Unknown'} · 0 products listed',
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                const SizedBox(height: 4),
+                const Text(
+                  'Details ➔',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF8D5A36),
+                  ),
                 ),
               ],
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE8F5E9),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Text(
-              'Approved',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2E7D32),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../../core/providers/request_provider.dart';
 import '../../../../../core/models/request_model.dart';
+import '../../../product/presentation/widgets/add_review_dialog.dart';
 
 class BuyerOrdersPage extends ConsumerStatefulWidget {
   const BuyerOrdersPage({super.key});
@@ -130,8 +131,7 @@ class _BuyerOrdersPageState extends ConsumerState<BuyerOrdersPage> {
                         .map((r) => Padding(
                               padding: const EdgeInsets.only(bottom: 12.0),
                               child: _buildPendingOrderCard(r),
-                            ))
-                        .toList(),
+                            )),
                     if (filteredRequests.any((r) => r.status == 'pending'))
                       const SizedBox(height: 12),
                   ],
@@ -154,6 +154,7 @@ class _BuyerOrdersPageState extends ConsumerState<BuyerOrdersPage> {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12.0),
                         child: _buildPreviousOrderCard(
+                          request: r,
                           title: '${r.productName} — ${r.quantity.toStringAsFixed(0)} kg',
                           farmer: '🧑‍🌾 ${r.farmerName} · Rs. ${r.totalPrice.toStringAsFixed(0)}',
                           time: DateFormat('MMM d, yyyy h:mm a').format(r.createdAt),
@@ -163,7 +164,7 @@ class _BuyerOrdersPageState extends ConsumerState<BuyerOrdersPage> {
                           isFaded: isRejected,
                         ),
                       );
-                    }).toList(),
+                    }),
                   ],
                 ],
               ],
@@ -360,6 +361,7 @@ class _BuyerOrdersPageState extends ConsumerState<BuyerOrdersPage> {
   }
 
   Widget _buildPreviousOrderCard({
+    required RequestModel request,
     required String title,
     required String farmer,
     required String time,
@@ -371,6 +373,7 @@ class _BuyerOrdersPageState extends ConsumerState<BuyerOrdersPage> {
     final titleColor = isFaded ? Colors.grey.shade400 : Colors.black87;
     final subtitleColor = isFaded ? Colors.grey.shade300 : Colors.grey.shade600;
     final imageBg = isFaded ? Colors.red.shade50 : const Color(0xFFE8F5E9);
+    final isAccepted = request.status == 'accepted';
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -379,73 +382,123 @@ class _BuyerOrdersPageState extends ConsumerState<BuyerOrdersPage> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade100),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
         children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: imageBg,
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: imageBg,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Text(
+                    isFaded ? '❌' : '📦',
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: titleColor,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            title,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: titleColor,
+                            ),
+                          ),
                         ),
-                      ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: statusColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            status,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: statusTextColor,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: statusColor,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        status,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: statusTextColor,
-                        ),
+                    const SizedBox(height: 4),
+                    Text(
+                      farmer,
+                      style: TextStyle(fontSize: 12, color: subtitleColor),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      time,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: isFaded
+                            ? Colors.grey.shade300
+                            : Colors.grey.shade500,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  farmer,
-                  style: TextStyle(fontSize: 12, color: subtitleColor),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  time,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: isFaded
-                        ? Colors.grey.shade300
-                        : Colors.grey.shade500,
+              ),
+            ],
+          ),
+          if (isAccepted) ...[
+            const SizedBox(height: 10),
+            const Divider(color: Color(0xFFEEEEEE), height: 1),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => AddReviewDialog(
+                        farmerId: request.farmerId,
+                        farmerName: request.farmerName,
+                        productId: request.productId,
+                        productName: request.productName,
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.star_outline_rounded, size: 16, color: Color(0xFF2E5E16)),
+                  label: const Text(
+                    'Rate Farmer & Product',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2E5E16),
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFF2E5E16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    visualDensity: VisualDensity.compact,
                   ),
                 ),
               ],
             ),
-          ),
+          ],
         ],
       ),
     );
