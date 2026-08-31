@@ -11,13 +11,28 @@ class AuthRepository {
 
   User? get currentUser => _auth.currentUser;
 
+  Stream<UserModel?> currentUserStream() {
+    return _auth.authStateChanges().asyncExpand((user) {
+      if (user == null) {
+        return Stream.value(null);
+      }
+      return _firestore
+          .collection('users')
+          .doc(user.uid)
+          .snapshots()
+          .map((doc) => doc.exists && doc.data() != null
+              ? UserModel.fromMap(doc.data()!, doc.id)
+              : null);
+    });
+  }
+
   Future<UserModel?> getCurrentUserModel() async {
     if (currentUser == null) return null;
     final doc = await _firestore
         .collection('users')
         .doc(currentUser!.uid)
         .get();
-    if (doc.exists) {
+    if (doc.exists && doc.data() != null) {
       return UserModel.fromMap(doc.data()!, doc.id);
     }
     return null;

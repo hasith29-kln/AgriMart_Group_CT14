@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../../core/theme/app_theme.dart';
 import '../../../../../core/router/app_router.dart';
 import '../../../../../core/providers/auth_provider.dart';
@@ -31,47 +32,56 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     if (emailOrPhone.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter email and password')),
+        const SnackBar(
+          content: Text('Please enter your email/phone and password'),
+          backgroundColor: Colors.redAccent,
+        ),
       );
       return;
     }
 
-    if (_selectedRole == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select your role (Farmer, Buyer, or Officer)'),
-        ),
-      );
-      return;
+    String finalEmail = emailOrPhone;
+    if (!emailOrPhone.contains('@')) {
+      final phoneRegex = RegExp(r'^0\d{9}$');
+      if (!phoneRegex.hasMatch(emailOrPhone)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Phone number must be exactly 10 digits (e.g. 0771234567)'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        return;
+      }
+      finalEmail = '$emailOrPhone@agrimart.com';
     }
 
     setState(() {
       _isLoading = true;
     });
 
-    String finalEmail = emailOrPhone;
-    if (!emailOrPhone.contains('@')) {
-      finalEmail = '$emailOrPhone@agrimart.com';
-    }
-
     try {
       await ref
           .read(authControllerProvider.notifier)
           .signIn(finalEmail, password);
 
-      // Fetch user role and navigate
+      // Fetch user profile and navigate
       final userModel = await ref
           .read(authRepositoryProvider)
           .getCurrentUserModel();
-      if (userModel != null && mounted) {
-        if (userModel.role != _selectedRole) {
-          // Role mismatch
+
+      if (!mounted) return;
+
+      if (userModel != null) {
+        // If a specific role was selected, verify role match
+        if (_selectedRole != null && userModel.role != _selectedRole) {
           await ref.read(authControllerProvider.notifier).signOut();
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'You are not registered as a ${_selectedRole!.toUpperCase()}',
+                'This account is registered as a ${userModel.role.toUpperCase()}, not ${_selectedRole!.toUpperCase()}.',
               ),
+              backgroundColor: Colors.orangeAccent,
             ),
           );
           return;
@@ -89,25 +99,41 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           AppRouter.home,
           arguments: userModel.role,
         );
-      } else if (mounted) {
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to load user profile')),
+          const SnackBar(
+            content: Text('Failed to load user profile. Please try again.'),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         String errorMessage = 'Login failed. Please check your credentials.';
         final errorStr = e.toString().toLowerCase();
+
         if (errorStr.contains('user-not-found') ||
             errorStr.contains('invalid-credential') ||
             errorStr.contains('wrong-password')) {
           errorMessage = 'Incorrect email/phone or password.';
+        } else if (errorStr.contains('invalid-email')) {
+          errorMessage = 'Please enter a valid email address or phone number.';
+        } else if (errorStr.contains('user-disabled')) {
+          errorMessage = 'This user account has been disabled.';
         } else if (errorStr.contains('too-many-requests')) {
-          errorMessage = 'Too many attempts. Please try again later.';
+          errorMessage = 'Too many failed attempts. Please try again later.';
+        } else if (errorStr.contains('network-request-failed')) {
+          errorMessage = 'Network error. Please check your internet connection.';
+        } else if (e is FirebaseAuthException && e.message != null) {
+          errorMessage = e.message!;
         }
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(errorMessage)));
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
       }
     } finally {
       if (mounted) {
@@ -128,7 +154,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 40),
+              const SizedBox(height: 30),
               // Logo
               Center(
                 child: Container(
@@ -138,11 +164,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(color: Colors.grey.shade300, width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withAlpha(10),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(24),
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(10.0),
                       child: Image.asset(
                         'assets/images/agrimart_logo.png',
                         fit: BoxFit.contain,
@@ -151,27 +184,28 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               // Welcome Text
               const Text(
                 'Welcome back',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               const Text(
                 'Sign in to AgriMart',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                style: TextStyle(fontSize: 15, color: Colors.grey),
               ),
-              const SizedBox(height: 40),
-              // Email Field
+              const SizedBox(height: 32),
+
+              // Email / Phone Field
               const Text(
-                'Email / Phone',
+                'Email / Phone Number',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -185,10 +219,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 autocorrect: false,
                 textCapitalization: TextCapitalization.none,
                 decoration: InputDecoration(
-                  hintText: 'e.g farmer@gmail.com',
-                  hintStyle: TextStyle(color: Colors.grey.shade400),
+                  hintText: 'e.g. farmer@gmail.com or 0771234567',
+                  hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
                   prefixIcon: const Icon(
-                    Icons.email_outlined,
+                    Icons.person_outline,
                     color: Colors.grey,
                   ),
                   fillColor: Colors.white,
@@ -211,7 +245,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 18),
+
               // Password Field
               const Text(
                 'Password',
@@ -275,6 +310,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 ),
               ),
               const SizedBox(height: 8),
+
               // Forgot Password
               Align(
                 alignment: Alignment.centerRight,
@@ -290,16 +326,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     style: TextStyle(
                       color: AppTheme.primaryGreen,
                       fontWeight: FontWeight.w600,
+                      fontSize: 13,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 30),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
+
               // Login Button
               SizedBox(
                 width: double.infinity,
-                height: 54,
+                height: 52,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _login,
                   style: ElevatedButton.styleFrom(
@@ -312,8 +349,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                   child: _isLoading
                       ? const SizedBox(
-                          height: 24,
-                          width: 24,
+                          height: 22,
+                          width: 22,
                           child: CircularProgressIndicator(
                             color: Colors.white,
                             strokeWidth: 2.5,
@@ -328,7 +365,39 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ),
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 28),
+
+              // Role Filter (Optional)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Role (Optional filter)',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  if (_selectedRole != null)
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedRole = null;
+                        });
+                      },
+                      child: const Text(
+                        'Clear filter',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppTheme.primaryGreen,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 8),
               Row(
                 children: [
                   Expanded(
@@ -338,7 +407,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       isSelected: _selectedRole == 'farmer',
                       onTap: () {
                         setState(() {
-                          _selectedRole = 'farmer';
+                          _selectedRole = _selectedRole == 'farmer' ? null : 'farmer';
                         });
                       },
                     ),
@@ -351,7 +420,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       isSelected: _selectedRole == 'buyer',
                       onTap: () {
                         setState(() {
-                          _selectedRole = 'buyer';
+                          _selectedRole = _selectedRole == 'buyer' ? null : 'buyer';
                         });
                       },
                     ),
@@ -364,20 +433,21 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       isSelected: _selectedRole == 'officer',
                       onTap: () {
                         setState(() {
-                          _selectedRole = 'officer';
+                          _selectedRole = _selectedRole == 'officer' ? null : 'officer';
                         });
                       },
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
+
               // Register Link
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    'No account ? ',
+                    'No account? ',
                     style: TextStyle(color: Colors.grey, fontSize: 14),
                   ),
                   GestureDetector(
@@ -395,6 +465,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                 ],
               ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -410,10 +481,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isSelected ? const Color(0xFFEDF5E1) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? const Color(0xFF2E7D32) : Colors.grey.shade300,
@@ -427,11 +499,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             Text(
               label,
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 11,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 color: isSelected
                     ? const Color(0xFF2E7D32)
-                    : Colors.grey.shade600,
+                    : Colors.grey.shade700,
               ),
               textAlign: TextAlign.center,
             ),
@@ -442,6 +514,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   void _showForgotPasswordDialog() {
+    final messenger = ScaffoldMessenger.of(context);
     final resetEmailController = TextEditingController(
       text: _emailController.text,
     );
@@ -452,10 +525,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (context) {
+      builder: (modalContext) {
         return Padding(
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
+            bottom: MediaQuery.of(modalContext).viewInsets.bottom,
             left: 24,
             right: 24,
             top: 24,
@@ -467,22 +540,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               const Text(
                 'Reset Password',
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               const Text(
                 'Enter your email address to receive a password reset link.',
-                style: TextStyle(color: Colors.grey, fontSize: 14),
+                style: TextStyle(color: Colors.grey, fontSize: 13),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               TextField(
                 controller: resetEmailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
-                  labelText: 'Email Address',
+                  labelText: 'Email Address / Phone',
                   prefixIcon: const Icon(
                     Icons.email_outlined,
                     color: Colors.grey,
@@ -500,15 +573,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 48,
                 child: ElevatedButton(
                   onPressed: () async {
                     final emailOrPhone = resetEmailController.text.trim();
                     if (emailOrPhone.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      messenger.showSnackBar(
                         const SnackBar(
                           content: Text('Please enter your email or phone'),
                         ),
@@ -516,7 +589,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       return;
                     }
 
-                    Navigator.pop(context); // Close bottom sheet
+                    Navigator.pop(modalContext); // Close bottom sheet
 
                     String finalEmail = emailOrPhone;
                     if (!emailOrPhone.contains('@')) {
@@ -527,25 +600,27 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       await ref
                           .read(authControllerProvider.notifier)
                           .resetPassword(finalEmail);
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Password reset link sent! Check your email.',
-                            ),
+                      messenger.showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Password reset link sent! Check your email.',
                           ),
-                        );
-                      }
+                          backgroundColor: AppTheme.primaryGreen,
+                        ),
+                      );
                     } catch (e) {
-                      if (mounted) {
-                        String errorMessage = 'Failed to send reset link.';
-                        if (e.toString().contains('user-not-found')) {
-                          errorMessage = 'No user found with this email/phone.';
-                        }
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text(errorMessage)));
+                      String errorMessage = 'Failed to send reset link.';
+                      if (e.toString().contains('user-not-found')) {
+                        errorMessage = 'No user found with this email/phone.';
+                      } else if (e is FirebaseAuthException && e.message != null) {
+                        errorMessage = e.message!;
                       }
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text(errorMessage),
+                          backgroundColor: Colors.redAccent,
+                        ),
+                      );
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -557,11 +632,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                   child: const Text(
                     'Send Reset Link',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 28),
             ],
           ),
         );

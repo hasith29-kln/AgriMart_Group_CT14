@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../../core/theme/app_theme.dart';
 import '../../../../../core/router/app_router.dart';
 import '../../../../../core/providers/auth_provider.dart';
@@ -13,7 +14,7 @@ class RegisterPage extends ConsumerStatefulWidget {
 
 class _RegisterPageState extends ConsumerState<RegisterPage> {
   int _selectedRoleIndex = 0; // 0: Farmer, 1: Buyer, 2: Officer
-  
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -26,11 +27,31 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   bool _obscureConfirmPassword = true;
 
   final List<String> _districts = [
-    'Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle',
-    'Gampaha', 'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle',
-    'Kilinochchi', 'Kurunegala', 'Mannar', 'Matale', 'Matara', 'Monaragala',
-    'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa', 'Puttalam', 'Ratnapura',
-    'Trincomalee', 'Vavuniya'
+    'Ampara',
+    'Anuradhapura',
+    'Badulla',
+    'Batticaloa',
+    'Colombo',
+    'Galle',
+    'Gampaha',
+    'Hambantota',
+    'Jaffna',
+    'Kalutara',
+    'Kandy',
+    'Kegalle',
+    'Kilinochchi',
+    'Kurunegala',
+    'Mannar',
+    'Matale',
+    'Matara',
+    'Monaragala',
+    'Mullaitivu',
+    'Nuwara Eliya',
+    'Polonnaruwa',
+    'Puttalam',
+    'Ratnapura',
+    'Trincomalee',
+    'Vavuniya',
   ];
 
   @override
@@ -39,6 +60,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _nicController.dispose();
     _departmentController.dispose();
     super.dispose();
   }
@@ -52,18 +74,108 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final nic = _nicController.text.trim();
     final department = _departmentController.text.trim();
 
-    if (name.isEmpty || emailOrPhone.isEmpty || password.isEmpty || district.isEmpty || 
-        (_selectedRoleIndex == 0 && nic.isEmpty) || 
-        (_selectedRoleIndex == 2 && department.isEmpty)) {
+    if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _selectedRoleIndex == 0 
-                ? 'Please fill all fields, including NIC, and select a district' 
-                : _selectedRoleIndex == 2 
-                    ? 'Please fill all fields, including Department, and select a district'
-                    : 'Please fill all fields and select a district'
+        const SnackBar(
+          content: Text('Please enter your full name'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    if (emailOrPhone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your email or phone number'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    final isEmail = emailOrPhone.contains('@');
+    if (isEmail) {
+      final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+      if (!emailRegex.hasMatch(emailOrPhone)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please enter a valid email address'),
+            backgroundColor: Colors.redAccent,
           ),
+        );
+        return;
+      }
+    } else {
+      final phoneRegex = RegExp(r'^0\d{9}$');
+      if (!phoneRegex.hasMatch(emailOrPhone)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Phone number must be exactly 10 digits (e.g. 0771234567)'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        return;
+      }
+    }
+
+    if (_selectedRoleIndex == 0) {
+      if (nic.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Farmers must provide their National Identity Card (NIC) number'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        return;
+      }
+      final nicRegex = RegExp(r'^(\d{12}|\d{9}[vVxX])$');
+      if (!nicRegex.hasMatch(nic)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please enter a valid NIC number (12 digits or 9 digits with V/X)'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        return;
+      }
+    }
+
+    if (_selectedRoleIndex == 2 && department.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Officers must provide their Department name'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    if (district.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select your district'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    if (password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a password'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Password must be at least 6 characters long'),
+          backgroundColor: Colors.redAccent,
         ),
       );
       return;
@@ -71,7 +183,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
     if (password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
+        const SnackBar(
+          content: Text('Passwords do not match'),
+          backgroundColor: Colors.redAccent,
+        ),
       );
       return;
     }
@@ -92,27 +207,61 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     try {
       final Map<String, dynamic> userData = {
         'name': name,
+        'email': finalEmail,
         'role': role,
         'district': district,
         'status': role == 'farmer' ? 'pending' : 'approved',
         'contact': emailOrPhone,
-        'nic': nic,
-        if (role == 'officer') 'department': department,
+        'phone': !emailOrPhone.contains('@') ? emailOrPhone : null,
+        'nic': role == 'farmer' ? nic : null,
+        'department': role == 'officer' ? department : null,
+        'savedProducts': <String>[],
       };
-      
-      await ref.read(authControllerProvider.notifier).register(finalEmail, password, userData);
-      
-      if (mounted) {
-        Navigator.pushReplacementNamed(
-          context, 
-          AppRouter.home,
-          arguments: role,
-        );
-      }
+
+      await ref
+          .read(authControllerProvider.notifier)
+          .register(finalEmail, password, userData);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            role == 'farmer'
+                ? 'Registration successful! Verification is pending.'
+                : 'Account created successfully!',
+          ),
+          backgroundColor: AppTheme.primaryGreen,
+        ),
+      );
+
+      Navigator.pushReplacementNamed(
+        context,
+        AppRouter.home,
+        arguments: role,
+      );
     } catch (e) {
       if (mounted) {
+        String errorMessage = 'Registration failed. Please try again.';
+        final errorStr = e.toString().toLowerCase();
+
+        if (errorStr.contains('email-already-in-use')) {
+          errorMessage = 'An account with this email/phone already exists. Please log in.';
+        } else if (errorStr.contains('invalid-email')) {
+          errorMessage = 'Please enter a valid email address or phone number.';
+        } else if (errorStr.contains('weak-password')) {
+          errorMessage = 'The password provided is too weak (minimum 6 characters).';
+        } else if (errorStr.contains('network-request-failed')) {
+          errorMessage = 'Network connection error. Please check your internet.';
+        } else if (e is FirebaseAuthException && e.message != null) {
+          errorMessage = e.message!;
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     } finally {
@@ -170,7 +319,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // Role selection cards
               _buildRoleCard(
                 index: 0,
@@ -195,77 +344,80 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 emoji: '👨‍💼',
                 iconBgColor: const Color(0xFFFFF9C4),
               ),
-              
+
               const SizedBox(height: 24),
               const Divider(color: Color(0xFFEEEEEE), thickness: 1),
               const SizedBox(height: 24),
-              
+
               // Form Fields
               _buildInputField(
-                'Full Name', 
-                'Your full name', 
+                'Full Name',
+                'Your full name',
                 controller: _nameController,
                 textCapitalization: TextCapitalization.words,
               ),
               const SizedBox(height: 16),
               _buildInputField(
-                'Email / Phone', 
-                'Email or phone number', 
+                'Email / Phone Number',
+                'e.g. name@example.com or 0771234567',
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 autocorrect: false,
               ),
               const SizedBox(height: 16),
-              if (_selectedRoleIndex == 2) ...[
+              if (_selectedRoleIndex == 0) ...[
                 _buildInputField(
-                  'Department', 
-                  'Your department (e.g. Department of Agriculture)', 
-                  controller: _departmentController,
+                  'NIC (National Identity Card)',
+                  'e.g. 199512345678 or 951234567V',
+                  controller: _nicController,
                 ),
                 const SizedBox(height: 16),
               ],
-              if (_selectedRoleIndex == 0) ...[
+              if (_selectedRoleIndex == 2) ...[
                 _buildInputField(
-                  'NIC', 
-                  'Your National Identity Card number', 
-                  controller: _nicController,
+                  'Department',
+                  'e.g. Department of Agriculture',
+                  controller: _departmentController,
                 ),
                 const SizedBox(height: 16),
               ],
               const Text(
                 'District',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: Colors.black87,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               DropdownButtonFormField<String>(
-                value: _selectedDistrict,
-                hint: const Text('Select your district'),
+                initialValue: _selectedDistrict,
+                hint: Text(
+                  'Select your district',
+                  style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                ),
                 isExpanded: true,
                 decoration: InputDecoration(
                   fillColor: Colors.grey.shade50,
                   filled: true,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF387015), width: 1.5),
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: AppTheme.primaryGreen, width: 1.5),
                   ),
                 ),
                 items: _districts.map((district) {
                   return DropdownMenuItem<String>(
                     value: district,
-                    child: Text(district),
+                    child: Text(district, style: const TextStyle(fontSize: 14)),
                   );
                 }).toList(),
                 onChanged: (value) {
@@ -276,9 +428,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               ),
               const SizedBox(height: 16),
               _buildInputField(
-                'Password', 
-                'Create a password', 
-                obscureText: _obscurePassword, 
+                'Password',
+                'Create a password (min. 6 characters)',
+                obscureText: _obscurePassword,
                 controller: _passwordController,
                 autocorrect: false,
                 suffixIcon: IconButton(
@@ -295,9 +447,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               ),
               const SizedBox(height: 16),
               _buildInputField(
-                'Confirm Password', 
-                'Repeat password', 
-                obscureText: _obscureConfirmPassword, 
+                'Confirm Password',
+                'Repeat password',
+                obscureText: _obscureConfirmPassword,
                 controller: _confirmPasswordController,
                 autocorrect: false,
                 suffixIcon: IconButton(
@@ -312,24 +464,31 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   },
                 ),
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // Register Button
               SizedBox(
-                height: 54,
+                height: 52,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _register,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF387015),
+                    backgroundColor: AppTheme.primaryGreen,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 0,
                   ),
-                  child: _isLoading 
-                      ? const CircularProgressIndicator(color: Colors.white) 
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
                       : const Text(
                           'Register',
                           style: TextStyle(
@@ -339,9 +498,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         ),
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Login Link
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -381,14 +540,15 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     required Color iconBgColor,
   }) {
     bool isSelected = _selectedRoleIndex == index;
-    
+
     return GestureDetector(
       onTap: () {
         setState(() {
           _selectedRoleIndex = index;
         });
       },
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFFEDF5E1) : const Color(0xFFF9F9F9),
@@ -452,9 +612,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   }
 
   Widget _buildInputField(
-    String label, 
+    String label,
     String hint, {
-    bool obscureText = false, 
+    bool obscureText = false,
     required TextEditingController controller,
     TextInputType? keyboardType,
     bool autocorrect = true,

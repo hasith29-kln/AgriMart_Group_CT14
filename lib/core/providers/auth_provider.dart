@@ -12,12 +12,8 @@ final authStateProvider = StreamProvider<User?>((ref) {
   return ref.watch(authRepositoryProvider).authStateChanges;
 });
 
-final currentUserProvider = FutureProvider<UserModel?>((ref) async {
-  final user = ref.watch(authStateProvider).value;
-  if (user != null) {
-    return ref.watch(authRepositoryProvider).getCurrentUserModel();
-  }
-  return null;
+final currentUserProvider = StreamProvider<UserModel?>((ref) {
+  return ref.watch(authRepositoryProvider).currentUserStream();
 });
 
 class AuthController extends StateNotifier<AsyncValue<void>> {
