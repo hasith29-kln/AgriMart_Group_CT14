@@ -28,7 +28,7 @@ class _BuyerEditProfilePageState extends ConsumerState<BuyerEditProfilePage> {
       _currentUser = ref.read(currentUserProvider).value;
       if (_currentUser != null) {
         _nameController.text = _currentUser!.name;
-        _emailController.text = _currentUser!.email ?? '';
+        _emailController.text = _currentUser!.email;
         setState(() {});
       }
     });
@@ -118,31 +118,16 @@ class _BuyerEditProfilePageState extends ConsumerState<BuyerEditProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.grey.shade300, width: 2),
-                          ),
-                          child: const Icon(Icons.person, size: 50, color: Colors.grey),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF1976D2), // Buyer blue
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(Icons.camera_alt, color: Colors.white, size: 16),
-                          ),
-                        ),
-                      ],
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.grey.shade300, width: 2),
+                      ),
+                      alignment: Alignment.center,
+                      child: Icon(Icons.person, size: 54, color: Colors.grey.shade500),
                     ),
                   ),
                   const SizedBox(height: 32),

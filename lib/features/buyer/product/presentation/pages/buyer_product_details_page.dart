@@ -2,14 +2,10 @@ import 'package:agri_mart/core/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import '../../../../../core/models/product_model.dart';
 import '../../../../../core/router/app_router.dart';
 import '../../../../../core/providers/user_provider.dart';
-import '../../../../../core/providers/review_provider.dart';
 import '../../../../../core/providers/certificate_provider.dart';
-import '../../../../../core/theme/app_theme.dart';
-import '../widgets/add_review_dialog.dart';
 import '../../../../farmer/profile/presentation/widgets/certificate_viewer_dialog.dart';
 
 class BuyerProductDetailsPage extends ConsumerWidget {
@@ -27,9 +23,6 @@ class BuyerProductDetailsPage extends ConsumerWidget {
     final farmer = farmersList.where((f) => f.id == product.farmerId).firstOrNull;
     bool isVerified = farmer?.status == 'approved';
 
-    // Watch reviews & rating summary
-    final ratingSummary = ref.watch(farmerRatingSummaryProvider(product.farmerId));
-    final reviewsAsync = ref.watch(farmerReviewsProvider(product.farmerId));
     final certificatesAsync = ref.watch(farmerCertificatesProvider(product.farmerId));
     final certificates = certificatesAsync.value?.where((c) => c.status == 'active').toList() ?? [];
 
@@ -98,7 +91,7 @@ class BuyerProductDetailsPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Product Image Placeholder
+            // Product Image
             Container(
               width: double.infinity,
               height: 220,
@@ -173,15 +166,7 @@ class BuyerProductDetailsPage extends ConsumerWidget {
               children: [
                 Expanded(child: _buildGridItem('Location', product.location.split(',').first, '📍')),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: _buildGridItem(
-                    'Rating',
-                    ratingSummary.totalReviews > 0
-                        ? '⭐ ${ratingSummary.averageRating.toStringAsFixed(1)} (${ratingSummary.totalReviews})'
-                        : '⭐ New Farmer',
-                    '',
-                  ),
-                ),
+                Expanded(child: _buildGridItem('Unit', product.unit, '⚖️')),
               ],
             ),
             const SizedBox(height: 24),
@@ -226,21 +211,16 @@ class BuyerProductDetailsPage extends ConsumerWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 2),
-                            Row(
-                              children: [
-                                const Icon(Icons.star_rounded, size: 16, color: Color(0xFFFFB300)),
-                                const SizedBox(width: 3),
-                                Text(
-                                  ratingSummary.totalReviews > 0
-                                      ? '${ratingSummary.averageRating.toStringAsFixed(1)} (${ratingSummary.totalReviews} reviews)'
-                                      : 'New Farmer (5.0)',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              isVerified
+                                  ? 'Verified Farmer · ${product.location.split(',').first} District'
+                                  : 'Farmer · ${product.location.split(',').first} District',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey.shade600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
@@ -368,181 +348,7 @@ class BuyerProductDetailsPage extends ConsumerWidget {
                 color: Colors.grey.shade600,
               ),
             ),
-            const SizedBox(height: 32),
-
-            // ── Rating & Reviews Section ──
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Buyer Reviews & Ratings',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      ratingSummary.totalReviews > 0
-                          ? '⭐ ${ratingSummary.averageRating.toStringAsFixed(1)} out of 5 (${ratingSummary.totalReviews} reviews)'
-                          : 'No reviews yet. Be the first to review!',
-                      style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                    ),
-                  ],
-                ),
-                TextButton.icon(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) => AddReviewDialog(
-                        farmerId: product.farmerId,
-                        farmerName: product.farmerName,
-                        productId: product.id,
-                        productName: product.name,
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.rate_review_outlined, size: 16, color: AppTheme.primaryGreen),
-                  label: const Text(
-                    'Add Review',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryGreen,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            // Reviews List
-            reviewsAsync.when(
-              data: (reviews) {
-                if (reviews.isEmpty) {
-                  return Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade200),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'No customer reviews yet for this farmer.\nOrder now and leave your feedback!',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
-                      ),
-                    ),
-                  );
-                }
-
-                return Column(
-                  children: reviews.take(5).map((review) {
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF9F9F9),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.grey.shade200),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 14,
-                                    backgroundColor: Colors.blue.shade100,
-                                    child: Text(
-                                      review.buyerName.isNotEmpty
-                                          ? review.buyerName[0].toUpperCase()
-                                          : 'B',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.blue.shade800,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    review.buyerName,
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: List.generate(5, (index) {
-                                  return Icon(
-                                    index < review.rating.round()
-                                        ? Icons.star_rounded
-                                        : Icons.star_border_rounded,
-                                    size: 16,
-                                    color: const Color(0xFFFFB300),
-                                  );
-                                }),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          if (review.qualityFeedback.isNotEmpty)
-                            Container(
-                              margin: const EdgeInsets.only(bottom: 6),
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFEDF5E1),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                review.qualityFeedback,
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2E7D32),
-                                ),
-                              ),
-                            ),
-                          Text(
-                            review.comment,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey.shade800,
-                              height: 1.4,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            DateFormat('MMM d, yyyy').format(review.createdAt),
-                            style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
-              loading: () => const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-              error: (err, st) => const SizedBox.shrink(),
-            ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 40),
 
             // Action Buttons
             Row(
@@ -551,21 +357,11 @@ class BuyerProductDetailsPage extends ConsumerWidget {
                   child: SizedBox(
                     height: 50,
                     child: OutlinedButton.icon(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (_) => AddReviewDialog(
-                            farmerId: product.farmerId,
-                            farmerName: product.farmerName,
-                            productId: product.id,
-                            productName: product.name,
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.star_outline_rounded, size: 20),
+                      onPressed: () {},
+                      icon: const Icon(Icons.call_outlined, size: 20),
                       label: const Text(
-                        'Rate Farmer',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                        'Contact',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                       ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF2E5E16),

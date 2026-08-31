@@ -15,8 +15,8 @@ import 'package:agri_mart/features/officer/profile/presentation/pages/officer_pr
 import 'package:agri_mart/features/farmer/home/presentation/pages/farmer_home_content.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:agri_mart/core/providers/product_provider.dart';
 import 'package:agri_mart/features/comman/notifications/presentation/pages/app_notifications_page.dart';
+import 'package:agri_mart/core/providers/notification_provider.dart';
 
 final selectedTabProvider = StateProvider<int>((ref) => 0);
 
@@ -107,13 +107,14 @@ class _HomePageState extends ConsumerState<HomePage> {
   // Removed _buildHomeContent as it's now in farmer_home_content.dart
 
   PreferredSizeWidget _buildAppBar() {
+    final hasUnread = ref.watch(hasUnreadNotificationsProvider);
+
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: const Color(0xFF387015),
       elevation: 0,
       title: Row(
         children: [
-          // Using an emoji as the agrimart logo in the appbar
           const Text('🌾', style: TextStyle(fontSize: 24)),
           const SizedBox(width: 8),
           const Text(
@@ -129,9 +130,10 @@ class _HomePageState extends ConsumerState<HomePage> {
       actions: [
         GestureDetector(
           onTap: () {
+            ref.read(notificationReadStateProvider.notifier).state = true;
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AppNotificationsPage()),
+              MaterialPageRoute(builder: (context) => const AppNotificationsPage()),
             );
           },
           child: Stack(
@@ -146,18 +148,19 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
                 child: const Text('🔔', style: TextStyle(fontSize: 20)),
               ),
-              Positioned(
-                right: 8,
-                top: 3,
-                child: Container(
-                  width: 12,
-                  height: 12,
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
+              if (hasUnread)
+                Positioned(
+                  right: 14,
+                  top: 8,
+                  child: Container(
+                    width: 9,
+                    height: 9,
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),
@@ -180,8 +183,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   PreferredSizeWidget _buildOfficerAppBar() {
-    final products = ref.watch(allProductsProvider).value ?? [];
-    final hasPending = products.any((p) => p.status == 'pending');
+    final hasUnread = ref.watch(hasUnreadNotificationsProvider);
 
     return AppBar(
       automaticallyImplyLeading: false,
@@ -204,9 +206,10 @@ class _HomePageState extends ConsumerState<HomePage> {
       actions: [
         GestureDetector(
           onTap: () {
+            ref.read(notificationReadStateProvider.notifier).state = true;
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AppNotificationsPage()),
+              MaterialPageRoute(builder: (context) => const AppNotificationsPage()),
             );
           },
           child: Stack(
@@ -221,13 +224,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
                 child: const Text('🔔', style: TextStyle(fontSize: 18)),
               ),
-              if (hasPending)
+              if (hasUnread)
                 Positioned(
-                  right: 12,
-                  top: 10,
+                  right: 14,
+                  top: 8,
                   child: Container(
-                    width: 8,
-                    height: 8,
+                    width: 9,
+                    height: 9,
                     decoration: const BoxDecoration(
                       color: Colors.red,
                       shape: BoxShape.circle,
@@ -256,6 +259,8 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   PreferredSizeWidget _buildBuyerAppBar() {
+    final hasUnread = ref.watch(hasUnreadNotificationsProvider);
+
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: Colors.white,
@@ -277,9 +282,10 @@ class _HomePageState extends ConsumerState<HomePage> {
       actions: [
         GestureDetector(
           onTap: () {
+            ref.read(notificationReadStateProvider.notifier).state = true;
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AppNotificationsPage()),
+              MaterialPageRoute(builder: (context) => const AppNotificationsPage()),
             );
           },
           child: Stack(
@@ -294,18 +300,19 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
                 child: const Text('🔔', style: TextStyle(fontSize: 18)),
               ),
-              Positioned(
-                right: 12,
-                top: 10,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
+              if (hasUnread)
+                Positioned(
+                  right: 14,
+                  top: 8,
+                  child: Container(
+                    width: 9,
+                    height: 9,
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),
