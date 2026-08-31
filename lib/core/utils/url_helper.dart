@@ -12,13 +12,15 @@ class UrlHelper {
     try {
       final Uri uri = Uri.parse(urlString);
       if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Could not open $urlString'),
-              backgroundColor: Colors.redAccent,
-            ),
-          );
+        if (!await launchUrl(uri, mode: LaunchMode.platformDefault)) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Could not open $urlString'),
+                backgroundColor: Colors.redAccent,
+              ),
+            );
+          }
         }
       }
     } catch (e) {
