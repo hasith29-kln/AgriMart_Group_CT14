@@ -8,7 +8,6 @@ class SplashNotifier extends Notifier<SplashState> {
 
   Future<void> initialize() async {
     state = SplashState.loading;
-    // TODO: Check auth state / token, then navigate accordingly
     await Future.delayed(const Duration(seconds: 2));
     state = SplashState.ready;
   }

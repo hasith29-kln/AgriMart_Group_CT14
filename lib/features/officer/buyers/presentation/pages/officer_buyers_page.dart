@@ -255,7 +255,7 @@ class _OfficerBuyersPageState extends ConsumerState<OfficerBuyersPage> {
                           isSuspended: b.status == 'suspended',
                         ),
                       );
-                    }).toList(),
+                    }),
                   const SizedBox(height: 20),
                 ],
               ),
