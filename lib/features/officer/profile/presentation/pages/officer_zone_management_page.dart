@@ -7,10 +7,12 @@ class OfficerZoneManagementPage extends ConsumerStatefulWidget {
   const OfficerZoneManagementPage({super.key});
 
   @override
-  ConsumerState<OfficerZoneManagementPage> createState() => _OfficerZoneManagementPageState();
+  ConsumerState<OfficerZoneManagementPage> createState() =>
+      _OfficerZoneManagementPageState();
 }
 
-class _OfficerZoneManagementPageState extends ConsumerState<OfficerZoneManagementPage> {
+class _OfficerZoneManagementPageState
+    extends ConsumerState<OfficerZoneManagementPage> {
   final Color primaryBrown = const Color(0xFF8D5A36);
   String? _selectedZoneName;
 
@@ -37,7 +39,11 @@ class _OfficerZoneManagementPageState extends ConsumerState<OfficerZoneManagemen
         ),
         title: const Text(
           'Zone Management',
-          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -47,7 +53,11 @@ class _OfficerZoneManagementPageState extends ConsumerState<OfficerZoneManagemen
           children: [
             const Text(
               'Managed Zones overview',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -55,7 +65,7 @@ class _OfficerZoneManagementPageState extends ConsumerState<OfficerZoneManagemen
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 20),
-            
+
             farmersAsync.when(
               data: (farmers) {
                 return productsAsync.when(
@@ -68,7 +78,14 @@ class _OfficerZoneManagementPageState extends ConsumerState<OfficerZoneManagemen
                             children: [
                               Text('📭', style: TextStyle(fontSize: 48)),
                               SizedBox(height: 16),
-                              Text('No Data', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)),
+                              Text(
+                                'No Data',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black54,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -76,21 +93,64 @@ class _OfficerZoneManagementPageState extends ConsumerState<OfficerZoneManagemen
                     }
                     return Column(
                       children: [
-                        _buildZoneCard('Zone 1', 'North Zone', farmers, products, '0xFFE8F5E9', '0xFF2E7D32'),
+                        _buildZoneCard(
+                          'Zone 1',
+                          'North Zone',
+                          farmers,
+                          products,
+                          '0xFFE8F5E9',
+                          '0xFF2E7D32',
+                        ),
                         const SizedBox(height: 16),
-                        _buildZoneCard('Zone 2', 'South Zone', farmers, products, '0xFFFFF3E0', '0xFFE65100'),
+                        _buildZoneCard(
+                          'Zone 2',
+                          'South Zone',
+                          farmers,
+                          products,
+                          '0xFFFFF3E0',
+                          '0xFFE65100',
+                        ),
                         const SizedBox(height: 16),
-                        _buildZoneCard('Zone 3', 'East Zone', farmers, products, '0xFFFFEBEE', '0xFFC62828'),
+                        _buildZoneCard(
+                          'Zone 3',
+                          'East Zone',
+                          farmers,
+                          products,
+                          '0xFFFFEBEE',
+                          '0xFFC62828',
+                        ),
                         const SizedBox(height: 16),
-                        _buildZoneCard('Zone 4', 'West Zone', farmers, products, '0xFFE3F2FD', '0xFF1565C0'),
+                        _buildZoneCard(
+                          'Zone 4',
+                          'West Zone',
+                          farmers,
+                          products,
+                          '0xFFE3F2FD',
+                          '0xFF1565C0',
+                        ),
                         const SizedBox(height: 16),
-                        _buildZoneCard('Zone 5', 'Outskirts/Zone 5', farmers, products, '0xFFF3E5F5', '0xFF6A1B9A'),
+                        _buildZoneCard(
+                          'Zone 5',
+                          'Outskirts/Zone 5',
+                          farmers,
+                          products,
+                          '0xFFF3E5F5',
+                          '0xFF6A1B9A',
+                        ),
                         const SizedBox(height: 16),
-                        _buildZoneCard('Unassigned', 'Public Signups / Pending Assignment', farmers, products, '0xFFECEFF1', '0xFF37474F'),
+                        _buildZoneCard(
+                          'Unassigned',
+                          'Public Signups / Pending Assignment',
+                          farmers,
+                          products,
+                          '0xFFECEFF1',
+                          '0xFF37474F',
+                        ),
                       ],
                     );
                   },
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
                   error: (err, _) => Text('Error loading products: $err'),
                 );
               },
@@ -124,7 +184,9 @@ class _OfficerZoneManagementPageState extends ConsumerState<OfficerZoneManagemen
 
     // Create a set of farmer IDs in this zone to filter products
     final farmerIdsInZone = farmersInZone.map((f) => f.id).toSet();
-    final int productCount = allProducts.where((p) => farmerIdsInZone.contains(p.farmerId)).length;
+    final int productCount = allProducts
+        .where((p) => farmerIdsInZone.contains(p.farmerId))
+        .length;
 
     final bgColor = Color(int.parse(bgHex));
     final textColor = Color(int.parse(textHex));
@@ -146,9 +208,9 @@ class _OfficerZoneManagementPageState extends ConsumerState<OfficerZoneManagemen
           ),
           boxShadow: [
             BoxShadow(
-              color: isSelected 
-                  ? primaryBrown.withOpacity(0.08) 
-                  : Colors.black.withOpacity(0.02),
+              color: isSelected
+                  ? primaryBrown.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.02),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -165,23 +227,37 @@ class _OfficerZoneManagementPageState extends ConsumerState<OfficerZoneManagemen
                   children: [
                     Text(
                       zoneName,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
                     Text(
                       region,
-                      style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade500,
+                      ),
                     ),
                   ],
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: bgColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     'Active',
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: textColor),
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
                   ),
                 ),
               ],
@@ -190,7 +266,10 @@ class _OfficerZoneManagementPageState extends ConsumerState<OfficerZoneManagemen
             Row(
               children: [
                 Expanded(
-                  child: _buildZoneStat('🧑‍🌾 Farmers', '$farmerCount registered'),
+                  child: _buildZoneStat(
+                    '🧑‍🌾 Farmers',
+                    '$farmerCount registered',
+                  ),
                 ),
                 Expanded(
                   child: _buildZoneStat('📦 Products', '$productCount listed'),
@@ -209,7 +288,11 @@ class _OfficerZoneManagementPageState extends ConsumerState<OfficerZoneManagemen
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black54),
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.black54,
+          ),
         ),
         const SizedBox(height: 4),
         Text(

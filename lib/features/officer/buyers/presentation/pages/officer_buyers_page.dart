@@ -279,7 +279,7 @@ class _OfficerBuyersPageState extends ConsumerState<OfficerBuyersPage> {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: bgColor.withOpacity(0.8), width: 1.5),
+        border: Border.all(color: bgColor.withValues(alpha: 0.8), width: 1.5),
       ),
       child: Column(
         children: [
@@ -507,15 +507,24 @@ class _OfficerBuyersPageState extends ConsumerState<OfficerBuyersPage> {
                   children: [
                     Expanded(
                       child: StreamBuilder<List<dynamic>>(
-                        stream: ref.read(requestRepositoryProvider).getRequestsByBuyer(buyer.id),
+                        stream: ref
+                            .read(requestRepositoryProvider)
+                            .getRequestsByBuyer(buyer.id),
                         builder: (context, snapshot) {
-                          final count = snapshot.hasData ? snapshot.data!.length.toString() : '...';
+                          final count = snapshot.hasData
+                              ? snapshot.data!.length.toString()
+                              : '...';
                           return _buildDetailBox('Total orders', count);
                         },
                       ),
                     ),
                     const SizedBox(width: 12),
-                    Expanded(child: _buildDetailBox('Joined', DateFormat('MMM dd, yyyy').format(buyer.createdAt))),
+                    Expanded(
+                      child: _buildDetailBox(
+                        'Joined',
+                        DateFormat('MMM dd, yyyy').format(buyer.createdAt),
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -650,8 +659,10 @@ class _OfficerBuyersPageState extends ConsumerState<OfficerBuyersPage> {
 
   String _getTimeAgo(DateTime date) {
     final difference = DateTime.now().difference(date);
-    if (difference.inDays > 365) return '${(difference.inDays / 365).floor()} years ago';
-    if (difference.inDays >= 30) return '${(difference.inDays / 30).floor()} months ago';
+    if (difference.inDays > 365)
+      return '${(difference.inDays / 365).floor()} years ago';
+    if (difference.inDays >= 30)
+      return '${(difference.inDays / 30).floor()} months ago';
     if (difference.inDays > 0) return '${difference.inDays} days ago';
     if (difference.inHours > 0) return '${difference.inHours} hours ago';
     if (difference.inMinutes > 0) return '${difference.inMinutes} minutes ago';

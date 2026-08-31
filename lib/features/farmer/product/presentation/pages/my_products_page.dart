@@ -18,12 +18,7 @@ class _MyProductsPageState extends ConsumerState<MyProductsPage> {
 
   int _filterIndex = 0; // 0=All, 1=Active, 2=Pending, 3=Sold
 
-  final List<String> _filterLabels = [
-    'ALL',
-    'Active',
-    'Pending',
-    'Sold',
-  ];
+  final List<String> _filterLabels = ['ALL', 'Active', 'Pending', 'Sold'];
 
   List<ProductModel> _getFilteredProducts(List<ProductModel> allProducts) {
     switch (_filterIndex) {
@@ -48,19 +43,36 @@ class _MyProductsPageState extends ConsumerState<MyProductsPage> {
       body: productsAsync.when(
         data: (allProducts) {
           final filtered = _getFilteredProducts(allProducts);
-          final activeCount = allProducts.where((p) => p.status == 'active').length;
-          final pendingCount = allProducts.where((p) => p.status == 'pending').length;
+          final activeCount = allProducts
+              .where((p) => p.status == 'active')
+              .length;
+          final pendingCount = allProducts
+              .where((p) => p.status == 'pending')
+              .length;
           final soldCount = allProducts.where((p) => p.status == 'sold').length;
 
           return Column(
             children: [
-              _buildFilterTabs(allProducts.length, activeCount, pendingCount, soldCount),
-              _buildStatsRow(allProducts.length, activeCount, pendingCount, soldCount),
+              _buildFilterTabs(
+                allProducts.length,
+                activeCount,
+                pendingCount,
+                soldCount,
+              ),
+              _buildStatsRow(
+                allProducts.length,
+                activeCount,
+                pendingCount,
+                soldCount,
+              ),
               Expanded(
                 child: filtered.isEmpty
                     ? const Center(child: Text('No products found.'))
                     : ListView.separated(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         itemCount: filtered.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 10),
                         itemBuilder: (_, i) => _buildProductCard(filtered[i]),
@@ -117,7 +129,7 @@ class _MyProductsPageState extends ConsumerState<MyProductsPage> {
       'ALL ($total)',
       'Active ($active)',
       'Pending ($pending)',
-      'Sold ($sold)'
+      'Sold ($sold)',
     ];
 
     return Container(
@@ -138,11 +150,13 @@ class _MyProductsPageState extends ConsumerState<MyProductsPage> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: isActiveTab ? const Color(0xFFE8F5E9) : Colors.transparent,
+                  color: isActiveTab
+                      ? const Color(0xFFE8F5E9)
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
                     color: isActiveTab ? _green : Colors.grey.shade300,
-          
+
                     width: isActiveTab ? 1.5 : 1,
                   ),
                 ),
@@ -150,7 +164,9 @@ class _MyProductsPageState extends ConsumerState<MyProductsPage> {
                   labels[i],
                   style: TextStyle(
                     fontSize: 12,
-                    fontWeight: isActiveTab ? FontWeight.w700 : FontWeight.normal,
+                    fontWeight: isActiveTab
+                        ? FontWeight.w700
+                        : FontWeight.normal,
                     color: isActiveTab ? _green : Colors.grey.shade600,
                   ),
                 ),
@@ -247,12 +263,17 @@ class _MyProductsPageState extends ConsumerState<MyProductsPage> {
   Widget _buildProductCard(ProductModel product) {
     final isSold = product.status == 'sold';
     final isPending = product.status == 'pending';
-    final borderColor = isPending ? const Color(0xFFFFCC80) : Colors.transparent;
-    
+    final borderColor = isPending
+        ? const Color(0xFFFFCC80)
+        : Colors.transparent;
+
     // Fallback details if not fully provided
-    final detailsStr = '${product.quantity} ${product.unit} · ${product.category} · ${product.location}';
-    final priceStr = product.price > 0 ? 'Rs. ${product.price}/${product.unit}' : '';
-    
+    final detailsStr =
+        '${product.quantity} ${product.unit} · ${product.category} · ${product.location}';
+    final priceStr = product.price > 0
+        ? 'Rs. ${product.price}/${product.unit}'
+        : '';
+
     // Note logic based on status
     String? note;
     NoteType? noteType;
@@ -279,7 +300,7 @@ class _MyProductsPageState extends ConsumerState<MyProductsPage> {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -296,7 +317,8 @@ class _MyProductsPageState extends ConsumerState<MyProductsPage> {
                 decoration: BoxDecoration(
                   color: const Color(0xFFDCEDC8),
                   borderRadius: BorderRadius.circular(8),
-                  image: product.imageUrl != null && product.imageUrl!.isNotEmpty
+                  image:
+                      product.imageUrl != null && product.imageUrl!.isNotEmpty
                       ? DecorationImage(
                           image: NetworkImage(product.imageUrl!),
                           fit: BoxFit.cover,
@@ -351,7 +373,9 @@ class _MyProductsPageState extends ConsumerState<MyProductsPage> {
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
-                                      color: isSold ? Colors.grey.shade400 : Colors.black87,
+                                      color: isSold
+                                          ? Colors.grey.shade400
+                                          : Colors.black87,
                                     ),
                                   ),
                                 ),
@@ -516,9 +540,7 @@ class _MyProductsPageState extends ConsumerState<MyProductsPage> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
           'Delete Listing?',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -538,7 +560,10 @@ class _MyProductsPageState extends ConsumerState<MyProductsPage> {
             ),
           ],
         ),
-        actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        actionsPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         actions: [
           Row(
             children: [
@@ -546,7 +571,9 @@ class _MyProductsPageState extends ConsumerState<MyProductsPage> {
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFFFFCA28)), // Amber/Yellow
+                    side: const BorderSide(
+                      color: Color(0xFFFFCA28),
+                    ), // Amber/Yellow
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -554,7 +581,10 @@ class _MyProductsPageState extends ConsumerState<MyProductsPage> {
                   ),
                   child: const Text(
                     'Cancel',
-                    style: TextStyle(color: Color(0xFFFFCA28), fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Color(0xFFFFCA28),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -563,12 +593,17 @@ class _MyProductsPageState extends ConsumerState<MyProductsPage> {
                 child: OutlinedButton.icon(
                   onPressed: () async {
                     Navigator.pop(context);
-                    await ref.read(productControllerProvider.notifier).deleteProduct(product.id);
+                    await ref
+                        .read(productControllerProvider.notifier)
+                        .deleteProduct(product.id);
                   },
                   icon: const Text('🗑️', style: TextStyle(fontSize: 16)),
                   label: const Text(
                     'Delete',
-                    style: TextStyle(color: Color(0xFFB71C1C), fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Color(0xFFB71C1C),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Color(0xFFB71C1C)), // Red

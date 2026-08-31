@@ -25,7 +25,11 @@ class OfficerAboutPage extends StatelessWidget {
         ),
         title: const Text(
           'About AgriMart',
-          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -38,7 +42,7 @@ class OfficerAboutPage extends StatelessWidget {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: primaryBrown.withOpacity(0.1),
+                color: primaryBrown.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               alignment: Alignment.center,
@@ -47,7 +51,11 @@ class OfficerAboutPage extends StatelessWidget {
             const SizedBox(height: 16),
             const Text(
               'AgriMart',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
             Text(
               'Version 1.0.0',
@@ -57,7 +65,11 @@ class OfficerAboutPage extends StatelessWidget {
             const Text(
               'AgriMart is a premium agricultural marketplace bridging the gap between local farmers and buyers. Empowering officers with tools to regulate zones, inspect crop listings, and manage registrations for a transparent supply chain.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.black87, height: 1.5),
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black87,
+                height: 1.5,
+              ),
             ),
             const SizedBox(height: 48),
             const Divider(),
@@ -85,11 +97,19 @@ class OfficerAboutPage extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.black54),
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: Colors.black54,
+            ),
           ),
           Text(
             value,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87),
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
           ),
         ],
       ),

@@ -50,10 +50,14 @@ class SavedProductsPage extends ConsumerWidget {
 
           return productsAsyncValue.when(
             data: (products) {
-              final savedProductsList = products.where((p) => user.savedProducts.contains(p.id)).toList();
+              final savedProductsList = products
+                  .where((p) => user.savedProducts.contains(p.id))
+                  .toList();
 
               if (savedProductsList.isEmpty) {
-                return const Center(child: Text('Saved products are no longer available.'));
+                return const Center(
+                  child: Text('Saved products are no longer available.'),
+                );
               }
 
               return ListView.builder(
@@ -79,11 +83,11 @@ class SavedProductsPage extends ConsumerWidget {
 
   Widget _buildProductCard(BuildContext context, ProductModel product) {
     final bool isAvailable = product.quantity > 0 && product.status == 'active';
-    
+
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(
-          context, 
+          context,
           '/buyerProductDetails',
           arguments: product,
         );
@@ -95,7 +99,7 @@ class SavedProductsPage extends ConsumerWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.02),
+              color: Colors.black.withValues(alpha: 0.02),
               blurRadius: 5,
               offset: const Offset(0, 2),
             ),
@@ -136,15 +140,22 @@ class SavedProductsPage extends ConsumerWidget {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
-                          color: isAvailable ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+                          color: isAvailable
+                              ? Colors.green.withValues(alpha: 0.1)
+                              : Colors.orange.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           isAvailable ? 'Available' : 'Unavailable',
                           style: TextStyle(
-                            color: isAvailable ? Colors.green.shade700 : Colors.orange.shade800,
+                            color: isAvailable
+                                ? Colors.green.shade700
+                                : Colors.orange.shade800,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                           ),
@@ -158,15 +169,29 @@ class SavedProductsPage extends ConsumerWidget {
                       const Text('🧑‍🌾', style: TextStyle(fontSize: 12)),
                       const SizedBox(width: 4),
                       Text(
-                        product.farmerName.isEmpty ? 'Farmer' : product.farmerName,
-                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                        product.farmerName.isEmpty
+                            ? 'Farmer'
+                            : product.farmerName,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
                       const SizedBox(width: 12),
-                      Icon(Icons.location_on, size: 12, color: Colors.grey.shade600),
+                      Icon(
+                        Icons.location_on,
+                        size: 12,
+                        color: Colors.grey.shade600,
+                      ),
                       const SizedBox(width: 2),
                       Text(
-                        product.location.isEmpty ? 'Unknown' : product.location.split(',').first,
-                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                        product.location.isEmpty
+                            ? 'Unknown'
+                            : product.location.split(',').first,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
                     ],
                   ),

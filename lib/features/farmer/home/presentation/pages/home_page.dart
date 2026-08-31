@@ -206,9 +206,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => AppNotificationsPage(),
-              ),
+              MaterialPageRoute(builder: (context) => AppNotificationsPage()),
             );
           },
           child: Stack(
@@ -291,7 +289,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 margin: const EdgeInsets.only(right: 12),
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: Colors.amber.withOpacity(0.2), // Light yellowish
+                  color: Colors.amber.withValues(alpha: 0.2), // Light yellowish
                   shape: BoxShape.circle,
                 ),
                 child: const Text('🔔', style: TextStyle(fontSize: 18)),
@@ -315,7 +313,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           margin: const EdgeInsets.only(right: 16),
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.1), // Light blueish
+            color: Colors.blue.withValues(alpha: 0.1), // Light blueish
             shape: BoxShape.circle,
           ),
           child: const Text('👤', style: TextStyle(fontSize: 18)),

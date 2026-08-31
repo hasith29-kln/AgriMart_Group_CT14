@@ -18,30 +18,56 @@ class BuyerProfilePage extends ConsumerWidget {
       body: userAsyncValue.when(
         data: (user) {
           if (user == null) {
-            return const Center(child: Text('User not found. Please log in again.'));
+            return const Center(
+              child: Text('User not found. Please log in again.'),
+            );
           }
           final int totalOrders = requestsList.length;
-          final int acceptedOrders = requestsList.where((req) => req.status == 'accepted').length;
+          final int acceptedOrders = requestsList
+              .where((req) => req.status == 'accepted')
+              .length;
           final int savedProductsCount = user.savedProducts.length;
 
-          return _buildProfileContent(context, ref, user, totalOrders, acceptedOrders, savedProductsCount);
+          return _buildProfileContent(
+            context,
+            ref,
+            user,
+            totalOrders,
+            acceptedOrders,
+            savedProductsCount,
+          );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
-          child: Text('Error loading profile: $error', style: const TextStyle(color: Colors.red)),
+          child: Text(
+            'Error loading profile: $error',
+            style: const TextStyle(color: Colors.red),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildProfileContent(BuildContext context, WidgetRef ref, UserModel user, int totalOrders, int acceptedOrders, int savedProductsCount) {
+  Widget _buildProfileContent(
+    BuildContext context,
+    WidgetRef ref,
+    UserModel user,
+    int totalOrders,
+    int acceptedOrders,
+    int savedProductsCount,
+  ) {
     return SingleChildScrollView(
       child: Column(
         children: [
           // Top Header Section (Blue Background)
           Container(
             color: const Color(0xFF1976D2), // Standard Blue
-            padding: const EdgeInsets.only(top: 50, left: 20, right: 20, bottom: 0),
+            padding: const EdgeInsets.only(
+              top: 50,
+              left: 20,
+              right: 20,
+              bottom: 0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -63,14 +89,15 @@ class BuyerProfilePage extends ConsumerWidget {
                       },
                       child: const Row(
                         children: [
-                          Icon(Icons.edit, color: Colors.orangeAccent, size: 16),
+                          Icon(
+                            Icons.edit,
+                            color: Colors.orangeAccent,
+                            size: 16,
+                          ),
                           SizedBox(width: 4),
                           Text(
                             'Edit',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                            ),
+                            style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                         ],
                       ),
@@ -78,7 +105,7 @@ class BuyerProfilePage extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 24),
-                
+
                 // User Info Row
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,11 +153,16 @@ class BuyerProfilePage extends ConsumerWidget {
                           const SizedBox(height: 12),
                           // Badge Button
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.white.withOpacity(0.4)),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.4),
+                              ),
                             ),
                             child: Text(
                               '$totalOrders Orders placed',
@@ -149,7 +181,7 @@ class BuyerProfilePage extends ConsumerWidget {
               ],
             ),
           ),
-          
+
           // Stats Row (Dark Blue Background)
           Container(
             color: const Color(0xFF153448), // Dark Blue Navy
@@ -165,7 +197,7 @@ class BuyerProfilePage extends ConsumerWidget {
               ],
             ),
           ),
-          
+
           // Menu List
           Container(
             color: Colors.white,
@@ -174,7 +206,8 @@ class BuyerProfilePage extends ConsumerWidget {
                 _buildMenuItem(
                   icon: Icons.person_outline,
                   title: 'Personal Info',
-                  subtitle: '${user.email} ${user.phone != null ? '• ${user.phone}' : ''}',
+                  subtitle:
+                      '${user.email} ${user.phone != null ? '• ${user.phone}' : ''}',
                   onTap: () {
                     Navigator.pushNamed(context, '/buyerEditProfile');
                   },
@@ -187,7 +220,9 @@ class BuyerProfilePage extends ConsumerWidget {
                   subtitle: '$totalOrders orders placed',
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('My Orders feature coming soon!')),
+                      const SnackBar(
+                        content: Text('My Orders feature coming soon!'),
+                      ),
                     );
                   },
                 ),
@@ -217,7 +252,9 @@ class BuyerProfilePage extends ConsumerWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AppNotificationsPage()),
+                      MaterialPageRoute(
+                        builder: (context) => AppNotificationsPage(),
+                      ),
                     );
                   },
                 ),
@@ -229,17 +266,23 @@ class BuyerProfilePage extends ConsumerWidget {
                   onTap: () async {
                     if (user.email != null) {
                       try {
-                        await ref.read(authControllerProvider.notifier).resetPassword(user.email!);
+                        await ref
+                            .read(authControllerProvider.notifier)
+                            .resetPassword(user.email!);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Password reset email sent to your email!')),
+                            const SnackBar(
+                              content: Text(
+                                'Password reset email sent to your email!',
+                              ),
+                            ),
                           );
                         }
                       } catch (e) {
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error: $e')),
-                          );
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text('Error: $e')));
                         }
                       }
                     }
@@ -251,7 +294,7 @@ class BuyerProfilePage extends ConsumerWidget {
                   title: 'Logout',
                   subtitle: '',
                   iconColor: Colors.red,
-                  bgColor: Colors.red.withOpacity(0.1),
+                  bgColor: Colors.red.withValues(alpha: 0.1),
                   titleColor: Colors.red,
                   isLogout: true,
                   onTap: () async {
@@ -292,10 +335,7 @@ class BuyerProfilePage extends ConsumerWidget {
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 11,
-          ),
+          style: const TextStyle(color: Colors.white70, fontSize: 11),
         ),
       ],
     );
@@ -305,7 +345,7 @@ class BuyerProfilePage extends ConsumerWidget {
     return Container(
       width: 1,
       height: 30,
-      color: Colors.white.withOpacity(0.3),
+      color: Colors.white.withValues(alpha: 0.3),
     );
   }
 
@@ -367,7 +407,7 @@ class BuyerProfilePage extends ConsumerWidget {
                         color: Colors.grey.shade500,
                       ),
                     ),
-                  ]
+                  ],
                 ],
               ),
             ),
@@ -377,4 +417,3 @@ class BuyerProfilePage extends ConsumerWidget {
     );
   }
 }
-

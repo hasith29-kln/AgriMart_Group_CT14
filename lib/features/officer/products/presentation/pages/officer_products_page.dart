@@ -39,7 +39,11 @@ class _OfficerProductsPageState extends ConsumerState<OfficerProductsPage> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add, color: Color.fromARGB(255, 246, 248, 246), size: 20),
+            icon: const Icon(
+              Icons.add,
+              color: Color.fromARGB(255, 246, 248, 246),
+              size: 20,
+            ),
             constraints: const BoxConstraints(minWidth: 30, minHeight: 30),
             padding: const EdgeInsets.all(4),
             onPressed: () {
@@ -253,7 +257,7 @@ class _OfficerProductsPageState extends ConsumerState<OfficerProductsPage> {
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.bold,
-              color: textColor.withOpacity(0.8),
+              color: textColor.withValues(alpha: 0.8),
             ),
           ),
         ],
@@ -453,7 +457,8 @@ class _OfficerProductsPageState extends ConsumerState<OfficerProductsPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const OfficerProductApprovalsPage(),
+                        builder: (context) =>
+                            const OfficerProductApprovalsPage(),
                       ),
                     );
                   },
