@@ -7,6 +7,7 @@ import 'officer_edit_profile_page.dart';
 import 'officer_zone_management_page.dart';
 import 'officer_zone_reports_page.dart';
 import 'officer_about_page.dart';
+import '../../../../../core/utils/url_helper.dart';
 
 
 class OfficerProfilePage extends ConsumerWidget {
@@ -146,7 +147,7 @@ class OfficerProfilePage extends ConsumerWidget {
                             child: farmersAsync.when(
                               data: (farmers) => _buildStatItem(farmers.length.toString(), 'Farmers'),
                               loading: () => _buildStatItem('...', 'Farmers'),
-                              error: (_, __) => _buildStatItem('0', 'Farmers'),
+                              error: (err, st) => _buildStatItem('0', 'Farmers'),
                             ),
                           ),
                           Container(width: 1, height: 30, color: Colors.white38),
@@ -154,7 +155,7 @@ class OfficerProfilePage extends ConsumerWidget {
                             child: buyersAsync.when(
                               data: (buyers) => _buildStatItem(buyers.length.toString(), 'Buyers'),
                               loading: () => _buildStatItem('...', 'Buyers'),
-                              error: (_, __) => _buildStatItem('0', 'Buyers'),
+                              error: (err, st) => _buildStatItem('0', 'Buyers'),
                             ),
                           ),
                           Container(width: 1, height: 30, color: Colors.white38),
@@ -175,6 +176,7 @@ class OfficerProfilePage extends ConsumerWidget {
                   _buildListTile(context, ref, '👤', 'Officer Info', 'Name, ID, department'),
                   _buildListTile(context, ref, '🗺️', 'Zone Management', 'Zone 3 · Colombo District'),
                   _buildListTile(context, ref, '📊', 'Zone Reports', 'Weekly summaries'),
+                  _buildListTile(context, ref, '📈', 'SL Market Price Portal', 'National wholesale & retail prices'),
                   _buildListTile(context, ref, '🔔', 'Notifications', 'System alerts'),
                   _buildListTile(context, ref, '🔒', 'Change Password', 'Security settings'),
                   _buildListTile(context, ref, 'ℹ️', 'About AgriMart', 'App information'),
@@ -260,6 +262,8 @@ class OfficerProfilePage extends ConsumerWidget {
             context,
             MaterialPageRoute(builder: (context) => const OfficerZoneReportsPage()),
           );
+        } else if (title == 'SL Market Price Portal') {
+          UrlHelper.launchSlMarket(context);
         } else if (title == 'Change Password') {
           final currentUser = ref.read(currentUserProvider).value;
           if (currentUser != null && currentUser.email.isNotEmpty) {

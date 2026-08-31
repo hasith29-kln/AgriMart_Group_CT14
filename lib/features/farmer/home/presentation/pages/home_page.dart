@@ -309,14 +309,19 @@ class _HomePageState extends ConsumerState<HomePage> {
             ],
           ),
         ),
-        Container(
-          margin: const EdgeInsets.only(right: 16),
-          padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: Colors.blue.withValues(alpha: 0.1), // Light blueish
-            shape: BoxShape.circle,
+        GestureDetector(
+          onTap: () {
+            ref.read(selectedTabProvider.notifier).state = 4;
+          },
+          child: Container(
+            margin: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: Colors.blue.withValues(alpha: 0.1), // Light blueish
+              shape: BoxShape.circle,
+            ),
+            child: const Text('👤', style: TextStyle(fontSize: 18)),
           ),
-          child: const Text('👤', style: TextStyle(fontSize: 18)),
         ),
       ],
     );

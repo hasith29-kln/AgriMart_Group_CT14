@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/utils/url_helper.dart';
 
 class OfficerAboutPage extends StatelessWidget {
   const OfficerAboutPage({super.key});
@@ -76,6 +77,7 @@ class OfficerAboutPage extends StatelessWidget {
             const SizedBox(height: 24),
             _buildInfoRow('Developed by', 'Google DeepMind Team'),
             _buildInfoRow('Contact Support', 'support@agrimart.local'),
+            _buildInfoRow('Market Price Portal', 'slmarket.appcloudpro.com', isLink: true, onTap: () => UrlHelper.launchSlMarket(context)),
             _buildInfoRow('Terms of Service', 'agrimart.local/terms'),
             _buildInfoRow('Privacy Policy', 'agrimart.local/privacy'),
             const SizedBox(height: 40),
@@ -89,7 +91,7 @@ class OfficerAboutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(String label, String value, {bool isLink = false, VoidCallback? onTap}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -103,12 +105,25 @@ class OfficerAboutPage extends StatelessWidget {
               color: Colors.black54,
             ),
           ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+          GestureDetector(
+            onTap: onTap,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: isLink ? const Color(0xFF1976D2) : Colors.black87,
+                    decoration: isLink ? TextDecoration.underline : TextDecoration.none,
+                  ),
+                ),
+                if (isLink) ...[
+                  const SizedBox(width: 4),
+                  const Icon(Icons.open_in_new, size: 12, color: Color(0xFF1976D2)),
+                ],
+              ],
             ),
           ),
         ],

@@ -9,6 +9,7 @@ import '../../../../../core/providers/certificate_provider.dart';
 import '../../../../../core/router/app_router.dart';
 import '../../../../comman/notifications/presentation/pages/app_notifications_page.dart';
 import '../widgets/certificate_viewer_dialog.dart';
+import '../../../../../core/utils/url_helper.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -220,6 +221,16 @@ class ProfilePage extends ConsumerWidget {
                   iconBg: const Color(0xFFF1F8E9),
                   title: 'My Products',
                   subtitle: '$activeListings active listings',
+                ),
+                _buildMenuItem(
+                  icon: Icons.analytics_outlined,
+                  iconColor: const Color(0xFF2E7D32),
+                  iconBg: const Color(0xFFE8F5E9),
+                  title: 'SL Market Price Portal',
+                  subtitle: 'Daily wholesale & retail crop market prices',
+                  onTap: () {
+                    UrlHelper.launchSlMarket(context);
+                  },
                 ),
                 _buildMenuItem(
                   icon: Icons.notifications,

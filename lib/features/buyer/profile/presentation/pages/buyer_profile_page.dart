@@ -4,6 +4,7 @@ import 'package:agri_mart/core/providers/auth_provider.dart';
 import 'package:agri_mart/core/models/user_model.dart';
 import 'package:agri_mart/core/providers/request_provider.dart';
 import '../../../../comman/notifications/presentation/pages/app_notifications_page.dart';
+import '../../../../../core/utils/url_helper.dart';
 
 class BuyerProfilePage extends ConsumerWidget {
   const BuyerProfilePage({super.key});
@@ -237,6 +238,15 @@ class BuyerProfilePage extends ConsumerWidget {
                 ),
                 _buildListDivider(),
                 _buildMenuItem(
+                  icon: Icons.analytics_outlined,
+                  title: 'SL Market Price Portal',
+                  subtitle: 'Live vegetable & crop rates (slmarket.appcloudpro.com)',
+                  onTap: () {
+                    UrlHelper.launchSlMarket(context);
+                  },
+                ),
+                _buildListDivider(),
+                _buildMenuItem(
                   icon: Icons.location_on_outlined,
                   title: 'Delivery Address',
                   subtitle: user.district ?? 'Not specified',
@@ -264,11 +274,11 @@ class BuyerProfilePage extends ConsumerWidget {
                   title: 'Change Password',
                   subtitle: 'Security settings',
                   onTap: () async {
-                    if (user.email != null) {
+                    if (user.email.isNotEmpty) {
                       try {
                         await ref
                             .read(authControllerProvider.notifier)
-                            .resetPassword(user.email!);
+                            .resetPassword(user.email);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
